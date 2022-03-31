@@ -1,1 +1,38 @@
+#importing the libraries
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+#extract data and rename columns
+data = pd.read_csv('all_data.csv')
+data = data.rename(columns = {'Life expectancy at birth (years)':'LEABY'}, inplace = False)
+
+# analyze country by country
+for x in set(data.Country):
+    print("Average Life Expectancy (2000-2015) in " + x + ': '+  str(np.round(np.average(data['LEABY'][data.Country == x]),2)))
+    print("Correlation [GDP / Life Expectancy] in " + x + ': '+  str(np.round(data['GDP'][data.Country == x].corr(data['LEABY'][data.Country == x]),5)))
+
+    plt.figure(figsize=(18, 5))
+    plt.subplot(131)
+    plt.plot(data['Year'][data.Country == x],data['GDP'][data.Country == x])
+    plt.title('GDP')
+    plt.ylabel('GDP in USD')
+    plt.xlabel('Year')
+    plt.subplot(132)
+    plt.plot(data['Year'][data.Country == x],data['LEABY'][data.Country == x])
+    plt.title('Life Expectancy')
+    plt.ylabel('Years')
+    plt.xlabel('Year')
+    plt.subplot(133)
+    plt.scatter(data['LEABY'][data.Country == x],data['GDP'][data.Country == x])
+    plt.title('Life Expectancy (Scatter)')
+    plt.suptitle(x)
+    plt.show()
+
+plt.hist(data['LEABY'])
+plt.title("Histogram all Life Expectancy")
+plt.show()
+print("Correlation [GDP / Life Expectancy] in all data: "+  str(np.round(data['GDP'].corr(data['LEABY']),5)))
+print("That's whoy its important to minimize external noise, by clustering the analisys by country we obtain a better explanation.")
 
