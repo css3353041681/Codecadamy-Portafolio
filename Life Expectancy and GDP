@@ -6,7 +6,7 @@ import numpy as np
 
 #extract data and rename columns
 data = pd.read_csv('all_data.csv')
-data = data.rename(columns = {'Life expectancy at birth (years)':'LEABY'}, inplace = False)
+data.rename(columns = {'Life expectancy at birth (years)':'LEABY'}, inplace = True)
 
 # analyze country by country
 for x in set(data.Country):
@@ -30,9 +30,8 @@ for x in set(data.Country):
     plt.suptitle(x)
     plt.show()
 
-plt.hist(data['LEABY'])
-plt.title("Histogram all Life Expectancy")
+fig = plt.subplots(figsize=(15, 10)) 
+sns.violinplot(x="Country", y="LEABY", data=data)
 plt.show()
 print("Correlation [GDP / Life Expectancy] in all data: "+  str(np.round(data['GDP'].corr(data['LEABY']),5)))
 print("That's whoy its important to minimize external noise, by clustering the analisys by country we obtain a better explanation.")
-
