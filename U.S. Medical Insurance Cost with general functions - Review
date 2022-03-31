@@ -1,0 +1,62 @@
+#First we import the libraries
+import pandas as pd
+import numpy as np
+import itertools as it
+
+#We open de csv
+data = pd.read_csv('insurance.csv')
+#print(data.head())
+
+#We 'translate' some of the variables
+data['smokes']=[1 if x == "yes" else 0 for x in data.smoker]
+data['sexo']=[1 if x == "male" else 0 for x in data.sex]
+data['hijos']=[1 if x > 0 else 0 for x in data.children]
+data['regional'] = [1 if x == "northwest" else 2 if x =="southwest" else 3 if x =="southeast" else 4 if x =="northeast" else 0 for x in data.region]
+data['edad'] =  [1 if x <= 20 else 2 if x <= 30 else 3 if x <= 40 else 4 if x <= 50 else 5 for x in data.age]
+data['peso'] =  [1 if x <= 18.5 else 2 if x < 25 else 3 if x <= 30 else 4 if x <= 35 else 5 for x in data.bmi]
+#print(data.head(3))
+
+#Scoping the data
+print("Average Age: " + str(np.round(np.average(data.age),2)))
+
+#functions to obtain the average on 1 variable
+def effect(variabl,nivel):
+    promedios=[]
+    for i in nivel:
+        promedios.append(np.average(data.charges[data[variabl]==i]))
+    return promedios
+
+#functions to obtain the average on 2 variable
+def effect_2(variabl1,nivel1,variabl2,nivel2):
+    promedios=[]
+    base = []
+    indice = 0
+    for j in nivel1:
+        for k in nivel2:
+            for i in data[variabl1]:
+                if i == j:
+                    if data[variabl2][indice] == k:
+                        base.append(data.charges[indice])
+                indice += 1
+            promedios.append(np.average(base))
+            base = []
+            indice = 0
+    return promedios
+
+#defining a dictionary with all variables and levels
+var_completo = {'smokes':[0,1], 'sexo':[0,1],'hijos':[0,1],'regional':[1,2,3,4],'edad':[1,2,3,4,5],'peso':[1,2,3,4,5]}
+label_completo= {'smokes':['Non smoker','Smoker'], 'sexo':['female','male'],'hijos':['Childless','Children'],'regional':["northwest","southwest","southeast","northeast"],'edad':['18-20', '21-30', '31-40', '41-50', '>50'],'peso':['Underweight','Normal','Overweight','Obese','Extremely obese']}
+
+#printing all variable effects, 1 on 1
+for x in var_completo.items():
+    print(label_completo[x[0]] )
+    print (np.round(effect(x[0],x[1]),2))
+
+#printing all variable effects, 2 by 2
+for x in var_completo.items():
+    for y in var_completo.items():
+        if x[0] == y[0]:
+            pass
+        else:
+            print(list(it.product(label_completo[x[0]],label_completo[y[0]])))     
+            print (np.round(effect_2(x[0],x[1],y[0],y[1]),2))
